@@ -1,6 +1,7 @@
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -8,20 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 public class MancalaTest {
     public static void main(String[] args) {
-        /*JFrame frame = new JFrame("Testing");
-        // JPanel panel = new JPanel();
-
-        // idk where to put it run it and see if you like
-        DrawPanel mancalaBoard = new DrawPanel();
-        frame.add(mancalaBoard);
-
-        // EllipseButton hello = new EllipseButton("Hello World");
-        // panel.add(hello);
-
-        // frame.add(panel);
-        frame.setSize(1200, 500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);*/
         showFrame();
     }
     public static void showFrame() {
@@ -31,10 +18,6 @@ public class MancalaTest {
     	initFrame.getContentPane().setLayout(null);
     	initFrame.setVisible(true);
     	
-    	JButton toNextFrame = new JButton("Start Game");
-    	toNextFrame.setBounds(370, 350, 100, 100);
-    	initFrame.getContentPane().add(toNextFrame);
-    	
     	//Add title
     	JLabel title = new JLabel("Mancala");
     	title.setFont(new Font("Arial", Font.BOLD, 20));
@@ -42,8 +25,50 @@ public class MancalaTest {
     	initFrame.add(title);
     	
     	//Add input text for number of stones in each pit
-    	//Add 2 buttons for the style
+    	JLabel pitText = new JLabel("Number of Stones:");
+    	pitText.setBounds(10, 80, 200, 100);
+    	initFrame.add(pitText);
     	
+    	JTextField pitInput = new JTextField();
+    	initFrame.add(pitInput);
+    	pitInput.setBounds(120, 115, 100, 30);
+    	
+    	pitInput.addActionListener(new ActionListener() {
+    		
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			//Triggers some method to start the board with x stones in each pit
+    		}
+    	});
+    	
+    	//Add 2 style buttons
+    	JButton style1 = new JButton("Style 1");
+    	style1.setBounds(20, 240, 200, 85);
+    	initFrame.getContentPane().add(style1);
+    	
+    	style1.addActionListener(new ActionListener() {
+    		
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			//Triggers some method to use style 1
+    		}
+    	});
+    	
+    	JButton style2 = new JButton("Style 2");
+    	style2.setBounds(265, 240, 200, 85);
+    	initFrame.getContentPane().add(style2);
+    	
+    	style2.addActionListener(new ActionListener() {
+    		
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			//Triggers some method to use style 2
+    		}
+    	});
+    	
+		JButton toNextFrame = new JButton("Start Game");
+    	toNextFrame.setBounds(370, 350, 100, 100);
+    	initFrame.getContentPane().add(toNextFrame);
     	toNextFrame.addActionListener(new ActionListener() {
     		
     		@Override
