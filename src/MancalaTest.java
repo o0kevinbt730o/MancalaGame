@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class MancalaTest {
     public static void main(String[] args) {
         showFrame();
@@ -33,11 +35,13 @@ public class MancalaTest {
     	initFrame.add(pitInput);
     	pitInput.setBounds(120, 115, 100, 30);
     	
+		AtomicInteger numStonesInPit = new AtomicInteger(0);
     	pitInput.addActionListener(new ActionListener() {
     		
     		@Override
     		public void actionPerformed(ActionEvent e) {
     			//Triggers some method to start the board with x stones in each pit
+				numStonesInPit.set(Integer.parseInt(pitInput.getText()));
     		}
     	});
     	
@@ -76,8 +80,20 @@ public class MancalaTest {
     			initFrame.setVisible(false);
     			
     			JFrame mancalaFrame = new JFrame("Mancala");
-    			DrawPanel mancalaBoard = new DrawPanel();
+
+				DrawPanel mancalaBoard = new DrawPanel();
     			mancalaFrame.add(mancalaBoard);
+
+				/*if (numStonesInPit.intValue() == 3) {
+					//Remove pits to fit board
+					//mancalaBoard.removePitStonesForThree();
+
+				}
+				else {
+					//Draw board normally
+					//
+				}*/
+				
     			
     			mancalaFrame.setSize(1200, 500);
     			mancalaFrame.setVisible(true);

@@ -25,6 +25,10 @@ public class MancalaModel{
         listeners.add(listener);
     }
 
+    public void removeActionListener(ActionListener listener){
+        listeners.remove(listener);
+    }
+
     public int[] getPlayerAPits(){
         return playerAPits;
     }
@@ -59,47 +63,33 @@ public class MancalaModel{
         return false;
     }
 
+    // This is a helper method for mutatePlayerAPits and mutatePlayerBPits to calculate the opposite pit.
+    private int oppositePit(int index){
+        return 7 - index;
+    }
+
     public void mutatePlayerAPits(int index){
         int stones = playerAPits[index];
         playerAPits[index] = 0;
-        // for(int i = index + 1; i <= 7; i++){
-        //     if(i == 7 && stones != 0){
-        //         mancalaA++;
-        //         stones--;
-        //         break;
-        //     }
-        //     if(stones == 0){
-        //         if(i == 7){
-        //             playerAturn = true;
-        //         }
-        //         else{
-        //             if(playerAPits[i] == 1 && playerBPits[i] != 0){
-        //                 mancalaA += playerBPits[i] + playerAPits[i];
-        //                 playerBPits[i] = 0;
-        //                 playerAPits[i] = 0;
-        //             }
-        //             playerAturn = false;
-        //         }
-        //         break;
-        //     }
-        //     playerAPits[i]++;
-        //     stones--;
-        // }
         int i = index + 1;
         while(stones > 0){
             for (int j = i; j <= 7; j++){
                 if(j == 7 && stones != 0){
                     mancalaA++;
                     stones--;
+                    playerAturn = false;
                     break;
                 }
                 if(stones == 0){
                     if(j < 7){
-                        if(playerAPits[j] == 1 && playerBPits[j] != 0){
-                            mancalaA += playerBPits[j] + playerAPits[j];
-                            playerBPits[j] = 0;
+                        if(playerAPits[j] == 1 && playerBPits[oppositePit(j)] != 0){
+                            mancalaA += playerBPits[oppositePit(j)] + playerAPits[j];
+                            playerBPits[oppositePit(j)] = 0;
                             playerAPits[j] = 0;
                         }
+                    } else if (j == 7){
+                        mancalaA++;
+                        break;
                     }
                     playerAturn = false;
                     break;
@@ -107,10 +97,17 @@ public class MancalaModel{
                 playerAPits[j]++;
                 stones--;
             }
-            i = 1;
-            for(int j = i; j < 6; j++){
-                if(stones == 0)
+            // This if statement is to account for when stones == 0 and the last stone is placed in the mancala so the player gets another turn. This corresponds with the stones == 0 and j == 7 condition in the for loop above.
+            if (playerAturn && stones == 0){
+                break;
+            }
+
+            //i = 1;
+            for(int j = 6; j >= 1; j--){
+                if(stones == 0){
+                    playerAturn = false;
                     break;
+                }
                 playerBPits[j]++;
                 stones--;
             }
@@ -119,34 +116,50 @@ public class MancalaModel{
     }
 
     public void mutatePlayerBPits(int index){
+        index = oppositePit(index);
         int stones = playerBPits[index];
         playerBPits[index] = 0;
-        int i = index + 1;
+        int i = index - 1; //look at this index
         while(stones > 0){
-            for (int j = i; j <= 7; j++){
-                if(j == 7 && stones != 0){
+            for (int j = i; j+1 > 0; j--){ //look at this index
+                if(j == 0 && stones != 0){
                     mancalaB++;
                     stones--;
+                    playerAturn = true;
+                    System.out.println("I'm here 129");
                     break;
                 }
                 if(stones == 0){
-                    if(j < 7){
-                        if(playerBPits[j] == 1 && playerAPits[j] != 0){
-                            mancalaB += playerBPits[j] + playerAPits[j];
+                    if(j > 0){
+                        if(playerBPits[j] == 1 && playerAPits[oppositePit(j)] != 0){
+                            mancalaB += playerBPits[j] + playerAPits[oppositePit(j)];
                             playerBPits[j] = 0;
-                            playerAPits[j] = 0;
+                            playerAPits[oppositePit(j)] = 0;
                         }
+                    } else if (j == 0){
+                        mancalaB++;
+                        System.out.println("I'm here 141");
+                        break;
                     }
+                    System.out.println("I'm here 143");
                     playerAturn = true;
                     break;
                 }
                 playerBPits[j]++;
                 stones--;
             }
-            i = 1;
-            for(int j = i; j < 6; j++){
-                if(stones == 0)
+            // This if statement is to account for when stones == 0 and the last stone is placed in the mancala so the player gets another turn. This corresponds with the stones == 0 and j == 7 condition in the for loop above.
+            if (!playerAturn && stones == 0){
+                break;
+            }
+
+            //i = 1;
+            for(int j = 1; j < 7; j++){
+                if(stones == 0){
+                    System.out.println("I'm here 158");
+                    playerAturn = true;
                     break;
+                }
                 playerAPits[j]++;
                 stones--;
             }
@@ -164,6 +177,7 @@ public class MancalaModel{
         return false;
     }
 
+    // Call by checkEndGame
     public boolean isEmptyPlayerAPits(){
         for(int i = 1; i < 7; i++){
             if(playerAPits[i] != 0)
@@ -172,6 +186,7 @@ public class MancalaModel{
         return true;
     }
 
+    // Call by checkEndGame
     public boolean isEmptyPlayerBPits(){
         for(int i = 1; i < 7; i++){
             if(playerBPits[i] != 0)
@@ -188,6 +203,7 @@ public class MancalaModel{
         return "It's a tie!";
     }
 
+    // ------------------- For Testing -------------------
     public void print(){
         System.out.println("Player A: ");
         for(int i = 1; i < 7; i++){
@@ -213,23 +229,33 @@ public class MancalaModel{
 
     public static void main(String[] args) {
         MancalaModel model = new MancalaModel(4);
+        int command = 1;
         model.print();
         //System.out.println("" + model.isEmptyPlayerAPits() + " " + model.isEmptyPlayerBPits() + " " + model.checkEndGame());
         if(model.isPlayerAturn()) {
-            if(model.isPitEmpty(2))
-                return;
-            model.mutatePlayerAPits(1);
+            System.out.println("command" + command++);
+
+            model.mutatePlayerAPits(4);
             model.print();
-            model.mutatePlayerAPits(2);
-            model.print();
-            model.mutatePlayerAPits(6);
-            model.print();
+            // model.mutatePlayerAPits(2);
+            // model.print();
+            // model.mutatePlayerAPits(6);
+            // model.print();
+            
         } 
-        // if(!model.isPlayerAturn()) {
-        //     if(model.isPitEmpty(1))
-        //         return;
-        //     //model.mutatePlayerBPits(1);
-        //     model.print();
-        // }
+        
+        if(!model.isPlayerAturn()) {
+            System.out.println("command" + command++);
+
+            model.mutatePlayerBPits(1);
+            model.print();
+        }
+
+        if(model.isPlayerAturn()) {
+            System.out.println("command" + command++);
+
+            model.mutatePlayerAPits(3);
+            model.print();
+        }
     }
 }
