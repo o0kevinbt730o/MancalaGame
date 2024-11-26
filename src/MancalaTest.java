@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import javax.swing.JLabel;
+
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,9 +18,13 @@ public class MancalaTest {
     public static void showFrame() {
     	JFrame initFrame = new JFrame("Initial Screen");
     	initFrame.setSize(500, 500);
-    	initFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	initFrame.getContentPane().setLayout(null);
-    	initFrame.setVisible(true);
+    	
+    	//11-25-2024 I moved these lines of code to the bottom, because i noticed that when
+    	//i ran the Java program, the buttons were not showing up.
+//	 	initFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//    	initFrame.getContentPane().setLayout(null);
+//    	initFrame.setVisible(true);
+  
     	
     	//Add title
     	JLabel title = new JLabel("Mancala");
@@ -33,17 +39,19 @@ public class MancalaTest {
     	
     	JTextField pitInput = new JTextField();
     	initFrame.add(pitInput);
-    	pitInput.setBounds(120, 115, 100, 30);
+    	pitInput.setBounds(130, 115, 100, 30);
+    	
     	
 		AtomicInteger numStonesInPit = new AtomicInteger(0);
-    	pitInput.addActionListener(new ActionListener() {
-    		
-    		@Override
-    		public void actionPerformed(ActionEvent e) {
-    			//Triggers some method to start the board with x stones in each pit
-				numStonesInPit.set(Integer.parseInt(pitInput.getText()));
-    		}
-    	});
+		
+//    	pitInput.addActionListener(new ActionListener() {
+//    		
+//    		@Override
+//    		public void actionPerformed(ActionEvent e) {
+//    			//Triggers some method to start the board with x stones in each pit
+//				numStonesInPit.set(Integer.parseInt(pitInput.getText()));
+//    		}
+//    	});
     	
     	//Add 2 style buttons
     	JButton style1 = new JButton("Style 1");
@@ -81,24 +89,35 @@ public class MancalaTest {
     			
     			JFrame mancalaFrame = new JFrame("Mancala");
 
-				DrawPanel mancalaBoard = new DrawPanel();
-    			mancalaFrame.add(mancalaBoard);
+				DrawPanel mancalaBoard = new DrawPanel(Color.orange, Color.cyan, Color.lightGray);
+//				mancalaBoard.repaint();
+				
+				numStonesInPit.set(Integer.parseInt(pitInput.getText()));
 
-				/*if (numStonesInPit.intValue() == 3) {
+				if (numStonesInPit.intValue() == 3) {
 					//Remove pits to fit board
-					//mancalaBoard.removePitStonesForThree();
+//					mancalaBoard.repaint();
+					mancalaBoard.setIsThree(true);
+					
+					System.out.println(97);
 
 				}
-				else {
-					//Draw board normally
-					//
-				}*/
+				
+    			mancalaFrame.add(mancalaBoard);
 				
     			
     			mancalaFrame.setSize(1200, 500);
     			mancalaFrame.setVisible(true);
     			mancalaFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    			
+
     		}
     	});
+    	
+    	//11-25-2024 I moved these lines of code to the bottom, because i noticed that when
+    	//i ran the Java program, the buttons were not showing up.
+	 	initFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	initFrame.getContentPane().setLayout(null);
+    	initFrame.setVisible(true);
     }
 }
