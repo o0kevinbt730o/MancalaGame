@@ -1,6 +1,5 @@
 import java.awt.event.*;
 import java.util.*;
-import java.util.Stack;
 public class MancalaModel{
     private int[] playerAPits;
     private int[] playerBPits;
@@ -9,6 +8,8 @@ public class MancalaModel{
     boolean playerAturn;
     private Stack<MancalaState> undoStack;
     private int undoCount;
+    private int undoCountPlayerA;
+    private int undoCountPlayerB;
     private ArrayList<ActionListener> listeners;
 
     public MancalaModel(int stones){
@@ -24,6 +25,8 @@ public class MancalaModel{
 
         undoStack = new Stack<>();
         undoCount = 0; 
+        undoCountPlayerA = 0;
+        undoCountPlayerB = 0;
 
         listeners = new ArrayList<ActionListener>();
     }
@@ -33,7 +36,9 @@ public class MancalaModel{
     }
 
     public void undo() {
-        if (!undoStack.isEmpty() && undoCount < 3) {
+        if(undoCountPlayerA > 2 || undoCountPlayerB > 2)
+            return;
+        if (!undoStack.isEmpty() && undoCount < 1) {
             MancalaState prevState = undoStack.pop();
             playerAPits = prevState.getPlayerAPits();
             playerBPits = prevState.getPlayerBPits();
@@ -41,6 +46,8 @@ public class MancalaModel{
             mancalaB = prevState.getMancalaB();
             playerAturn = prevState.getPlayerATurn();
             undoCount++;
+            undoCountPlayerA++;
+            undoCountPlayerB++;
             for (ActionListener listener : listeners) {
                 listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "undoPits"));
             }
@@ -90,7 +97,7 @@ public class MancalaModel{
     }
 
     // This is a helper method for mutatePlayerBPits accessed by the MancalaController and MancalaView.
-    private int oppositePit(int index){
+    public int oppositePit(int index){
         return 7 - index;
     }
 
@@ -98,117 +105,85 @@ public class MancalaModel{
         saveState();
         int stones = playerAPits[index];
         playerAPits[index] = 0;
-        int i = index + 1;
-        while(stones > 0){
-            for (int j = i; j <= 7; j++){
-                if(j == 7 && stones != 0){
-                    mancalaA++;
-                    stones--;
-                    break;
-                }
-                if(stones == 0){
-                    if(j < 7){
-                        if(playerAPits[j-1] == 1 && playerBPits[oppositePit(j-1)] != 0){
-                            mancalaA += playerBPits[oppositePit(j-1)] + playerAPits[j-1];
-                            playerBPits[oppositePit(j-1)] = 0;
-                            playerAPits[j-1] = 0;
-                        }
-                    } else if (j == 7){
-                        mancalaA++;
-                        break;
-                    }
-                    playerAturn = false;
-                    break;
-                } 
-                playerAPits[j]++;
-                stones--;
-                if(j == 6 && stones == 0){
-                    if(playerAPits[j] == 1 && playerBPits[oppositePit(j)] != 0){
-                        mancalaA += playerBPits[oppositePit(j)] + playerAPits[j];
-                        playerBPits[oppositePit(j)] = 0;
-                        playerAPits[j] = 0;
-                    }
-                    playerAturn = false;
-                    break;
-                }
-            }
-            // This if statement is to account for when stones == 0 and the last stone is placed in the mancala so the player gets another turn. This corresponds with the stones == 0 and j == 7 condition in the for loop above.
-            if (playerAturn && stones == 0){
-                break;
-            }
+        int currentIndex = index;
+        while (stones > 0) {
+            System.out.println("Current Index: " + currentIndex);
+            currentIndex++;
+            
+            if (currentIndex == 14)
+                currentIndex = 1;
 
-            i = 1;
-            for(int j = i; j < 7; j++){
-                if(stones == 0){
-                    playerAturn = false;
-                    break;
-                }
-                playerBPits[j]++;
-                stones--;
-            }
-            i = 1;   
+            if (currentIndex == 7)
+                mancalaA++;
+
+            if (currentIndex < 7) 
+                playerAPits[currentIndex]++;
+            else 
+                playerBPits[currentIndex - 7]++;
+            
+            stones--;
         }
+
+        // Check for capture
+        if (currentIndex < 7 && playerAPits[currentIndex] == 1 && playerBPits[oppositePit(currentIndex)] > 0) {
+            mancalaA += playerBPits[oppositePit(currentIndex)] + playerAPits[currentIndex];
+            playerBPits[oppositePit(currentIndex)] = 0;
+            playerAPits[currentIndex] = 0;
+            playerAturn = false;
+        } else if (currentIndex == 7) 
+            playerAturn = true;
+        else if (currentIndex > 7) 
+            playerAturn = false;
+        else if (currentIndex < 7 ) 
+            playerAturn = false;
+        
         undoCount = 0;
+        undoCountPlayerB = 0;
         for(ActionListener listener : listeners){
-            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updatePits"));
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updateView"));
         }
     }
 
-    public void mutatePlayerBPits(int index){
+    public void mutatePlayerBPits(int index) {
         saveState();
         int stones = playerBPits[index];
         playerBPits[index] = 0;
-        int i = index + 1;
-        while(stones > 0){
-            for (int j = i; j <= 7; j++){
-                if(j == 7 && stones != 0){
-                    mancalaB++;
-                    stones--;
-                    break;
-                }
-                if(stones == 0){
-                    if(j < 7){
-                        if(playerBPits[j-1] == 1 && playerAPits[oppositePit(j-1)] != 0){
-                            mancalaB += playerBPits[j-1] + playerAPits[oppositePit(j-1)];
-                            playerBPits[j-1] = 0;
-                            playerAPits[oppositePit(j-1)] = 0;
-                        }
-                    } 
-                    playerAturn = true;
-                    break;
-                }
+        int currentIndex = index;
+        while (stones > 0) {
+            System.out.println("Current Index: " + currentIndex);
+            currentIndex++;
+            
+            if (currentIndex == 14) 
+                currentIndex = 1;
 
-                playerBPits[j]++;
-                stones--;
-                if(j == 6 && stones == 0){
-                    if(playerBPits[j] == 1 && playerAPits[oppositePit(j)] != 0){
-                        mancalaB += playerBPits[j] + playerAPits[oppositePit(j)];
-                        playerBPits[j] = 0;
-                        playerAPits[oppositePit(j)] = 0;
-                    }
-                    playerAturn = true;
-                    break;
-                }
-            }
-            // This if statement is to account for when stones == 0 and the last stone is placed in the mancala so the player gets another turn. This corresponds with the stones == 0 and j == 7 condition in the for loop above.
-            if (!playerAturn && stones == 0){
-                break;
-            }
+            if (currentIndex == 7) 
+                mancalaB++;
 
-            i = 1;
-            for(int j = i; j < 7; j++){
-                if(stones == 0){
-                    playerAturn = true;
-                    break;
-                }
-                playerAPits[j]++;
-                stones--;
-            }
-            i = 1;
+            if (currentIndex < 7) 
+                playerBPits[currentIndex]++;
+            else 
+                playerAPits[currentIndex - 7]++;
+
+            stones--;
         }
+
+        if (currentIndex < 7 && playerBPits[currentIndex] == 1 && playerAPits[oppositePit(currentIndex)] > 0) {
+            mancalaB += playerAPits[oppositePit(currentIndex)] + playerBPits[currentIndex];
+            playerAPits[oppositePit(currentIndex)] = 0;
+            playerBPits[currentIndex] = 0;
+            playerAturn = true;
+        } else if (currentIndex == 7) 
+            playerAturn = false;
+        else if (currentIndex > 7)
+            playerAturn = true;
+        else if (currentIndex < 7 )
+            playerAturn = true;
+
+
         undoCount = 0;
+        undoCountPlayerA = 0;
         for(ActionListener listener : listeners){
-            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updatePits"));
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updateView"));
         }
     }
 
@@ -236,16 +211,32 @@ public class MancalaModel{
         return true;
     }
 
-    public String checkWinner(){
-        if(mancalaA > mancalaB)
-            return "Player A wins!";
-        if(mancalaA < mancalaB)
-            return "Player B wins!";
-        return "It's a tie!";
+    public void checkWinner(){
+        if(isEmptyPlayerAPits()){
+            for(int i = 1; i < 7; i++){
+                mancalaB += playerBPits[i];
+                playerBPits[i] = 0;
+            }
+        } else if (isEmptyPlayerBPits()){
+            for(int i = 1; i < 7; i++){
+                mancalaA += playerAPits[i];
+                playerAPits[i] = 0;
+            }
+        }
+        for(ActionListener listener : listeners){
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updateView"));
+            if(mancalaA > mancalaB)
+                listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "playerAWins"));
+            else if(mancalaA < mancalaB)
+                listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "playerBWins"));
+            else 
+                listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Tie"));
+        }
     }
 
     // ------------------- For Testing -------------------
     public void print(){
+        //System.out.println("------------------- For Testing -------------------");
         System.out.println("Player A: ");
         for(int i = 1; i < 7; i++){
             System.out.print(playerAPits[i] + " ");
@@ -267,38 +258,33 @@ public class MancalaModel{
         }
     }
 
-
-    public static void main(String[] args) {
-        MancalaModel model = new MancalaModel(4);
-        
-        //System.out.println("" + model.isEmptyPlayerAPits() + " " + model.isEmptyPlayerBPits() + " " + model.checkEndGame());
+    public void testCase1(MancalaModel model) {
         if(model.isPlayerAturn()) {
             System.out.println("--------command 1");
             model.mutatePlayerAPits(4);
-            model.print();
-            // model.mutatePlayerAPits(2);
-            // model.print();
-            // model.mutatePlayerAPits(6);
-            // model.print();
-            
+            model.print(); 
+            System.out.println(model.isPlayerAturn());    
         } 
         
         if(!model.isPlayerAturn()) {
             System.out.println("--------command 2");
             model.mutatePlayerBPits(1);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         if(model.isPlayerAturn()) {
             System.out.println("--------command 3");
             model.mutatePlayerAPits(3);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         if(model.isPlayerAturn()) {
             System.out.println("--------command 4");
             model.mutatePlayerAPits(2);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         // WRONG TURN START HERE
@@ -306,24 +292,28 @@ public class MancalaModel{
             System.out.println("--------command 5");
             model.mutatePlayerBPits(2);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         if(!model.isPlayerAturn()) {
             System.out.println("--------command 6");
             model.mutatePlayerBPits(3);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         if(!model.isPlayerAturn()) {
             System.out.println("--------command 7");
             model.mutatePlayerBPits(4);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         if(model.isPlayerAturn()) {
             System.out.println("--------command 8");
             model.mutatePlayerAPits(3);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         // WRONG TURN START HERE
@@ -331,6 +321,7 @@ public class MancalaModel{
             System.out.println("--------command 9");
             model.mutatePlayerAPits(6);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         // WRONG TURN START HERE
@@ -338,12 +329,14 @@ public class MancalaModel{
             System.out.println("--------command 10");
             model.mutatePlayerAPits(1);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         if(!model.isPlayerAturn()) {
             System.out.println("--------command 11");
             model.mutatePlayerBPits(3);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         // WRONG TURN START HERE
@@ -351,6 +344,7 @@ public class MancalaModel{
             System.out.println("--------command 12");
             model.mutatePlayerBPits(2);
             model.print();
+            System.out.println(model.isPlayerAturn());
         }
 
         model.undo();
@@ -376,6 +370,13 @@ public class MancalaModel{
         model.undo();
         System.out.println("--------undo 4");
         model.print();
+    }
+
+    public static void main(String[] args) {
+        MancalaModel model = new MancalaModel(4);
+        
+        //System.out.println("" + model.isEmptyPlayerAPits() + " " + model.isEmptyPlayerBPits() + " " + model.checkEndGame());
+        model.testCase1(model);
 
     }
 }
