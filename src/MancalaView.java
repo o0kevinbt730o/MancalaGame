@@ -99,7 +99,6 @@ public class MancalaView extends JFrame implements ActionListener {
                     g2.draw(ellipse);
                     int[] playerAPits = model.getPlayerAPits();
                     int numCircles = playerAPits[index];
-                    //drawCirclesRandom(g2, 4, ellipse);
                     drawCircles(g2, numCircles, ellipse);
                 }
             };
@@ -115,7 +114,6 @@ public class MancalaView extends JFrame implements ActionListener {
                     g2.draw(ellipse);
                     int[] playerBPits = model.getPlayerBPits();
                     int numCircles = playerBPits[model.oppositePit(index)];
-                    //drawCirclesRandom(g2, 4, ellipse);
                     drawCircles(g2, numCircles, ellipse);
                 }
             };
@@ -211,26 +209,6 @@ public class MancalaView extends JFrame implements ActionListener {
         return undoButton;
     }
 
-    private void drawCirclesRandom(Graphics2D g2, int numCircles, Ellipse2D ellipse) {
-        Random rand = new Random();
-        Ellipse2D.Double ellipseChecker = new Ellipse2D.Double(ellipse.getX() + 10, ellipse.getY() + 10,
-                ellipse.getWidth() - 25, ellipse.getHeight() - 25);
-        int circleDiameter = 10;
-        for (int i = 0; i < numCircles; i++) {
-            double x = 0;
-            double y = 0;
-            boolean overLaps = true;
-            while (overLaps) {
-                x = ellipse.getX() + rand.nextDouble() * (ellipse.getWidth() - circleDiameter);
-                y = ellipse.getY() + rand.nextDouble() * (ellipse.getHeight() - circleDiameter);
-                if (ellipseChecker.contains(x, y)) {
-                    overLaps = false;
-                }
-            }
-            g2.fill(new Ellipse2D.Double(x, y, circleDiameter, circleDiameter));
-        }
-    }
-
     private void drawCircles(Graphics2D g2, int numCircles, Ellipse2D ellipse) {
         int row = numCircles / 4 + 1;
         Ellipse2D.Double[][] ellipses = new Ellipse2D.Double[row][4];
@@ -287,10 +265,10 @@ public class MancalaView extends JFrame implements ActionListener {
         else if (e.getActionCommand().equals("undoPits"))
             repaint();
         else if (e.getActionCommand().equals("playerAWins"))
-            JOptionPane.showMessageDialog(this, "Player A Wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "PLAYER A WINS!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
         else if (e.getActionCommand().equals("playerBWins"))
-            JOptionPane.showMessageDialog(this, "Player B Wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "PLAYER B WINS!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
         else if (e.getActionCommand().equals("tie"))
-            JOptionPane.showMessageDialog(this, "It's a tie!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "IT'S A TIE!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 }
