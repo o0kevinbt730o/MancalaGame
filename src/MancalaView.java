@@ -1,20 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
 import java.awt.event.*;
-import java.util.*;
 
 public class MancalaView extends JFrame implements ActionListener {
     private JPanel[] playerAPanels;
     private JPanel[] playerBPanels;
     private JButton undoButton;
     private MancalaModel model;
+    private BoardStyle boardStyle;
 
     public MancalaView(MancalaModel m) {
         model = m;
+        boardStyle = new RegularColorMancala();
         this.setTitle("Mancala Game");
         this.setSize(1500, 800);
-        //this.setResizable(false);
+        this.setResizable(false);
         this.setLocationRelativeTo(null);
         this.setLayout(new BorderLayout());
 
@@ -27,12 +27,8 @@ public class MancalaView extends JFrame implements ActionListener {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
-                g2.setColor(Color.RED);
-                // Draw panelLeft within roundRectanglePanel bounds by using getWidth() and getHeight()
-                RoundRectangle2D.Double roundRectangle = new RoundRectangle2D.Double(0, 0, getWidth() - 10, getHeight() - 10, 50, 50);
-                g2.draw(roundRectangle);
                 int mancalaB = model.getMancalaB();
-                drawMancala(g2, mancalaB, roundRectangle);
+                boardStyle.drawStonesInMancala(g2, 0, 0, getWidth() - 10, getHeight() - 10, mancalaB);
             }
         };
         panelLeft.setPreferredSize(new Dimension(125, 550));
@@ -42,13 +38,8 @@ public class MancalaView extends JFrame implements ActionListener {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
-                g2.setColor(Color.RED);
-
-                // Draw panelRight within roundRectanglePanel bounds by using getWidth() and getHeight()
-                RoundRectangle2D.Double roundRectangle = new RoundRectangle2D.Double(0, 0, getWidth() - 10, getHeight() - 10, 50, 50);
-                g2.draw(roundRectangle);
                 int mancalaA = model.getMancalaA();
-                drawMancala(g2, mancalaA, roundRectangle);
+                boardStyle.drawStonesInMancala(g2, 0, 0, getWidth() - 10, getHeight() - 10, mancalaA);
             }
         };
         panelRight.setPreferredSize(new Dimension(125, 550));
@@ -87,19 +78,15 @@ public class MancalaView extends JFrame implements ActionListener {
         aboveBottomLabelsPanel.setLayout(new GridLayout(1, 6));
         aboveBottomLabelsPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         for (int i = 1; i < 7; i++) {
-            Ellipse2D.Double ellipse = new Ellipse2D.Double(0, 0, 175, 260);
             int index = i;
             playerAPanels[i] = new JPanel() {
                 @Override
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
                     Graphics2D g2 = (Graphics2D) g;
-                    // Ellipse2D.Double ellipse = new Ellipse2D.Double(0, 0, getWidth() - 10, getHeight() - 10);
-                    //System.out.println("Ellipse: " + ellipse.getWidth() + " " + ellipse.getHeight());
-                    g2.draw(ellipse);
                     int[] playerAPits = model.getPlayerAPits();
-                    int numCircles = playerAPits[index];
-                    drawCircles(g2, numCircles, ellipse);
+                    int numStones = playerAPits[index];
+                    boardStyle.drawStonesInPits(g2, 0, 0, getWidth() - 10, getHeight() - 10, numStones);
                 }
             };
             playerAPanels[i].setPreferredSize(new Dimension(175, 260));
@@ -110,11 +97,9 @@ public class MancalaView extends JFrame implements ActionListener {
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
                     Graphics2D g2 = (Graphics2D) g;
-                    // Ellipse2D.Double ellipse = new Ellipse2D.Double(0, 0, getWidth() - 10, getHeight() - 10);
-                    g2.draw(ellipse);
                     int[] playerBPits = model.getPlayerBPits();
-                    int numCircles = playerBPits[model.oppositePit(index)];
-                    drawCircles(g2, numCircles, ellipse);
+                    int numStones = playerBPits[model.oppositePit(index)];
+                    boardStyle.drawStonesInPits(g2, 0, 0, getWidth() - 10, getHeight() - 10, numStones);
                 }
             };
             playerBPanels[i].setPreferredSize(new Dimension(175, 260));
@@ -128,9 +113,7 @@ public class MancalaView extends JFrame implements ActionListener {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
-                // draw roundRectanglePanel within JFrame bounds by using getWidth() and getHeight()
-                g2.drawRoundRect(10, 0, getWidth() - 20, getHeight(), 50, 50);
-                // System.out.println("Round Rectangle: " + getWidth() + " " + getHeight());
+                boardStyle.drawRoundRectBorder(g2, 10, 0, getWidth() - 20, getHeight(), 50, 50);
             }
         };
         roundRectanglePanel.setPreferredSize(new Dimension(1400, 650));
@@ -209,66 +192,29 @@ public class MancalaView extends JFrame implements ActionListener {
         return undoButton;
     }
 
-    private void drawCircles(Graphics2D g2, int numCircles, Ellipse2D ellipse) {
-        int row = numCircles / 4 + 1;
-        Ellipse2D.Double[][] ellipses = new Ellipse2D.Double[row][4];
-        double x = ellipse.getX() + 40;
-        double y = ellipse.getY() + 40;
-        int count = 0;
-        for (int r = 0; r < ellipses.length; r++) {
-            for (int c = 0; c < ellipses[r].length; c++) {
-                if (count >= numCircles)
-                    return;
-                ellipses[r][c] = new Ellipse2D.Double(x, y, 20, 20);
-                x += 25;
-                g2.setColor(Color.RED);
-                g2.fill(ellipses[r][c]);
-                g2.setColor(Color.BLACK);
-                g2.draw(ellipses[r][c]);
-                count++;
-            }
-            x = ellipse.getX() + 40;
-            y += 30;
-        }
+    public Shape getPitShape() {
+        return boardStyle.getPit();
     }
 
-    private void drawMancala(Graphics2D g2, int numCircles, RoundRectangle2D roundRectangle) {
-        int row = numCircles / 4 + 1;
-        Ellipse2D.Double[][] ellipses = new Ellipse2D.Double[row][4];
-        double x = roundRectangle.getX() + 10;
-        double y = roundRectangle.getY() + 10;
-        int count = 0;
-        for (int r = 0; r < ellipses.length; r++) {
-            for (int c = 0; c < ellipses[r].length; c++) {
-                if (count >= numCircles)
-                    return;
-                ellipses[r][c] = new Ellipse2D.Double(x, y, 20, 20);
-                x += 25;
-                g2.setColor(Color.GREEN);
-                g2.fill(ellipses[r][c]);
-                g2.setColor(Color.BLACK);
-                g2.draw(ellipses[r][c]);
-                count++;
-            }
-            x = roundRectangle.getX() + 10;
-            y += 25;
-        }
+    public void setBoardStyle(BoardStyle style) {
+        boardStyle = style;
+        repaint();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("updateView")){
-            System.out.println("Update View");
+        String cmd = e.getActionCommand();
+        if (cmd.equals("updateView")){
             model.print();
             repaint();
         } 
-        else if (e.getActionCommand().equals("undoPits"))
+        else if (cmd.equals("undoPits"))
             repaint();
-        else if (e.getActionCommand().equals("playerAWins"))
+        else if (cmd.equals("playerAWins"))
             JOptionPane.showMessageDialog(this, "PLAYER A WINS!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        else if (e.getActionCommand().equals("playerBWins"))
+        else if (cmd.equals("playerBWins"))
             JOptionPane.showMessageDialog(this, "PLAYER B WINS!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        else if (e.getActionCommand().equals("tie"))
+        else if (cmd.equals("Tie"))
             JOptionPane.showMessageDialog(this, "IT'S A TIE!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 }

@@ -13,12 +13,12 @@ public class MancalaModel{
     private ArrayList<ActionListener> listeners;
 
     public MancalaModel(int stones){
+        listeners = new ArrayList<ActionListener>();
+
         playerAPits = new int[7];
         playerBPits = new int[7];
-        for(int i = 1; i < 7; i++){
-            playerAPits[i] = stones;
-            playerBPits[i] = stones;
-        }
+        setNumStones(stones);
+
         mancalaA = 0;
         mancalaB = 0;
         playerAturn = true;   
@@ -27,8 +27,37 @@ public class MancalaModel{
         undoCount = 0; 
         undoCountPlayerA = 0;
         undoCountPlayerB = 0;
+    }
 
-        listeners = new ArrayList<ActionListener>();
+    public void setNumStones(int stones){
+        for(int i = 1; i < 7; i++){
+            playerAPits[i] = stones;
+            playerBPits[i] = stones;
+        }
+        for(ActionListener listener : listeners){
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updateView"));
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "gameStart"));
+        }
+    }
+
+    public void reset(){
+        for(int i = 1; i < 7; i++){
+            playerAPits[i] = 0;
+            playerBPits[i] = 0;
+        }
+        mancalaA = 0;
+        mancalaB = 0;
+        playerAturn = true;
+        while(!undoStack.isEmpty()){
+            undoStack.pop();
+        }
+        undoCount = 0;
+        undoCountPlayerA = 0;
+        undoCountPlayerB = 0;
+        for(ActionListener listener : listeners){
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updateView"));
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "playAgain"));
+        }
     }
 
     public void saveState() {
