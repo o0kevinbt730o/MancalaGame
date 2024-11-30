@@ -55,7 +55,7 @@ public class MancalaModel{
         undoCountPlayerA = 0;
         undoCountPlayerB = 0;
         for(ActionListener listener : listeners){
-            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updateView"));
+            listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "updateViewPlayAgain"));
             listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "playAgain"));
         }
     }

@@ -7,11 +7,11 @@ public class MancalaView extends JFrame implements ActionListener {
     private JPanel[] playerBPanels;
     private JButton undoButton;
     private MancalaModel model;
-    private BoardStyle boardStyle;
+    private BoardStyleContext boardStyle;
 
     public MancalaView(MancalaModel m) {
         model = m;
-        boardStyle = new RegularColorMancala();
+        boardStyle = new BoardStyleContext(new RegularColorMancalaBoard());
         this.setTitle("Mancala Game");
         this.setSize(1500, 800);
         this.setResizable(false);
@@ -28,7 +28,7 @@ public class MancalaView extends JFrame implements ActionListener {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 int mancalaB = model.getMancalaB();
-                boardStyle.drawStonesInMancala(g2, 0, 0, getWidth() - 10, getHeight() - 10, mancalaB);
+                boardStyle.drawMancala(g2, 0, 0, getWidth() - 10, getHeight() - 10, mancalaB);
             }
         };
         panelLeft.setPreferredSize(new Dimension(125, 550));
@@ -39,7 +39,7 @@ public class MancalaView extends JFrame implements ActionListener {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 int mancalaA = model.getMancalaA();
-                boardStyle.drawStonesInMancala(g2, 0, 0, getWidth() - 10, getHeight() - 10, mancalaA);
+                boardStyle.drawMancala(g2, 0, 0, getWidth() - 10, getHeight() - 10, mancalaA);
             }
         };
         panelRight.setPreferredSize(new Dimension(125, 550));
@@ -86,7 +86,7 @@ public class MancalaView extends JFrame implements ActionListener {
                     Graphics2D g2 = (Graphics2D) g;
                     int[] playerAPits = model.getPlayerAPits();
                     int numStones = playerAPits[index];
-                    boardStyle.drawStonesInPits(g2, 0, 0, getWidth() - 10, getHeight() - 10, numStones);
+                    boardStyle.drawPits(g2, 0, 0, getWidth() - 10, getHeight() - 10, numStones);
                 }
             };
             playerAPanels[i].setPreferredSize(new Dimension(175, 260));
@@ -99,7 +99,7 @@ public class MancalaView extends JFrame implements ActionListener {
                     Graphics2D g2 = (Graphics2D) g;
                     int[] playerBPits = model.getPlayerBPits();
                     int numStones = playerBPits[model.oppositePit(index)];
-                    boardStyle.drawStonesInPits(g2, 0, 0, getWidth() - 10, getHeight() - 10, numStones);
+                    boardStyle.drawPits(g2, 0, 0, getWidth() - 10, getHeight() - 10, numStones);
                 }
             };
             playerBPanels[i].setPreferredSize(new Dimension(175, 260));
@@ -113,7 +113,7 @@ public class MancalaView extends JFrame implements ActionListener {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
-                boardStyle.drawRoundRectBorder(g2, 10, 0, getWidth() - 20, getHeight(), 50, 50);
+                boardStyle.drawBorder(g2, 10, 0, getWidth() - 20, getHeight(), 50, 50);
             }
         };
         roundRectanglePanel.setPreferredSize(new Dimension(1400, 650));
@@ -196,9 +196,12 @@ public class MancalaView extends JFrame implements ActionListener {
         return boardStyle.getPit();
     }
 
+    // View-to-View interaction usin controller as intermediary.
     public void setBoardStyle(BoardStyle style) {
-        boardStyle = style;
+        boardStyle = new BoardStyleContext(style);
         repaint();
+        // Below is the method to repaint this MancalaView (JFrame) instantly
+        RepaintManager.currentManager(this).paintDirtyRegions();
     }
 
     @Override
@@ -207,7 +210,9 @@ public class MancalaView extends JFrame implements ActionListener {
         if (cmd.equals("updateView")){
             model.print();
             repaint();
-        } 
+        } else if(cmd.equals("updateViewPlayAgain")){
+            setBoardStyle(new RegularColorMancalaBoard());
+        }
         else if (cmd.equals("undoPits"))
             repaint();
         else if (cmd.equals("playerAWins"))

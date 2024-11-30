@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Color;
 
-public class RegularColorMancala implements BoardStyle{
+public class RegularColorMancalaBoard implements BoardStyle{
     private Ellipse2D.Double pit;
     private RoundRectangle2D.Double mancala;
     private RoundRectangle2D.Double boardBorder;

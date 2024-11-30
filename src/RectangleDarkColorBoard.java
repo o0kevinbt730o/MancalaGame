@@ -3,7 +3,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Color;
 
-public class RectangleDarkColorBoard implements BoardStyle{
+public class RectangleDarkColorBoard implements BoardStyle {
     private RoundRectangle2D.Double pit;
     private Rectangle2D.Double mancala;
     private RoundRectangle2D.Double boardBorder;
@@ -12,7 +12,7 @@ public class RectangleDarkColorBoard implements BoardStyle{
         mancala = new Rectangle2D.Double(x, y, width, height);
         g2.setColor(Color.decode("#990099"));
         g2.draw(mancala);
-        
+
         int row = numStones / 4 + 1;
         Rectangle2D.Double[][] ellipses = new Rectangle2D.Double[row][4];
         double xpos = mancala.getX() + 10;
@@ -39,7 +39,7 @@ public class RectangleDarkColorBoard implements BoardStyle{
         pit = new RoundRectangle2D.Double(x, y, width, height, 50, 50);
         g2.setColor(Color.decode("#009900"));
         g2.draw(pit);
-        
+
         int row = numStones / 4 + 1;
         Rectangle2D.Double[][] ellipses = new Rectangle2D.Double[row][4];
         double xpos = pit.getX() + 40;

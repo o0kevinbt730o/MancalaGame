@@ -7,7 +7,7 @@ public class MancalaInitScreen extends JFrame implements ActionListener{
 	private JButton style1, style2, toNextFrame;
 
 	public MancalaInitScreen(MancalaModel model) {
-		//JFrame initFrame = new JFrame("Game Mode");
+		this.setTitle("Game Mode");
 		this.setSize(500, 500);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
