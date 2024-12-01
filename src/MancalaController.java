@@ -68,7 +68,6 @@ public class MancalaController{
                             else   
                                 System.exit(0);
                         }
-                        System.out.println("Player A " + index + " Button clicked");
                     }
                 }
             });
@@ -89,7 +88,6 @@ public class MancalaController{
                             else
                                 System.exit(0);
                         }
-                        System.out.println("Player B " + index + " Button clicked");
                     }
                 }
             });

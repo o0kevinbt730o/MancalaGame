@@ -48,9 +48,8 @@ public class MancalaModel{
         mancalaA = 0;
         mancalaB = 0;
         playerAturn = true;
-        while(!undoStack.isEmpty()){
+        while(!undoStack.isEmpty())
             undoStack.pop();
-        }
         undoCount = 0;
         undoCountPlayerA = 0;
         undoCountPlayerB = 0;
@@ -136,7 +135,6 @@ public class MancalaModel{
         playerAPits[index] = 0;
         int currentIndex = index;
         while (stones > 0) {
-            System.out.println("Current Index: " + currentIndex);
             currentIndex++;
             
             if (currentIndex == 14)
@@ -153,7 +151,6 @@ public class MancalaModel{
             stones--;
         }
 
-        // Check for capture
         if (currentIndex < 7 && playerAPits[currentIndex] == 1 && playerBPits[oppositePit(currentIndex)] > 0) {
             mancalaA += playerBPits[oppositePit(currentIndex)] + playerAPits[currentIndex];
             playerBPits[oppositePit(currentIndex)] = 0;
@@ -161,9 +158,7 @@ public class MancalaModel{
             playerAturn = false;
         } else if (currentIndex == 7) 
             playerAturn = true;
-        else if (currentIndex > 7) 
-            playerAturn = false;
-        else if (currentIndex < 7 ) 
+        else
             playerAturn = false;
         
         undoCount = 0;
@@ -179,7 +174,6 @@ public class MancalaModel{
         playerBPits[index] = 0;
         int currentIndex = index;
         while (stones > 0) {
-            System.out.println("Current Index: " + currentIndex);
             currentIndex++;
             
             if (currentIndex == 14) 
@@ -203,11 +197,8 @@ public class MancalaModel{
             playerAturn = true;
         } else if (currentIndex == 7) 
             playerAturn = false;
-        else if (currentIndex > 7)
+        else
             playerAturn = true;
-        else if (currentIndex < 7 )
-            playerAturn = true;
-
 
         undoCount = 0;
         undoCountPlayerA = 0;
@@ -261,152 +252,6 @@ public class MancalaModel{
             else 
                 listener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Tie"));
         }
-    }
-
-    // ------------------- For Testing -------------------
-    public void print(){
-        //System.out.println("------------------- For Testing -------------------");
-        System.out.println("Player A: ");
-        for(int i = 1; i < 7; i++){
-            System.out.print(playerAPits[i] + " ");
-        }
-        System.out.println();
-        System.out.println("Player B: ");
-        for(int i = 1; i < 7; i++){
-            System.out.print(playerBPits[i] + " ");
-        }
-        System.out.println();
-        System.out.println("Mancala A: " + mancalaA);
-        System.out.println("Mancala B: " + mancalaB);
-    }
-
-    public void testEmptyAndWin(){
-        for (int i = 1; i < 7; i++){
-            playerAPits[i] = 0;
-            playerBPits[i] = 0;
-        }
-    }
-
-    public void testCase1(MancalaModel model) {
-        if(model.isPlayerAturn()) {
-            System.out.println("--------command 1");
-            model.mutatePlayerAPits(4);
-            model.print(); 
-            System.out.println(model.isPlayerAturn());    
-        } 
-        
-        if(!model.isPlayerAturn()) {
-            System.out.println("--------command 2");
-            model.mutatePlayerBPits(1);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        if(model.isPlayerAturn()) {
-            System.out.println("--------command 3");
-            model.mutatePlayerAPits(3);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        if(model.isPlayerAturn()) {
-            System.out.println("--------command 4");
-            model.mutatePlayerAPits(2);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        // WRONG TURN START HERE
-        if(!model.isPlayerAturn()) {
-            System.out.println("--------command 5");
-            model.mutatePlayerBPits(2);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        if(!model.isPlayerAturn()) {
-            System.out.println("--------command 6");
-            model.mutatePlayerBPits(3);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        if(!model.isPlayerAturn()) {
-            System.out.println("--------command 7");
-            model.mutatePlayerBPits(4);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        if(model.isPlayerAturn()) {
-            System.out.println("--------command 8");
-            model.mutatePlayerAPits(3);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        // WRONG TURN START HERE
-        if(!model.isPlayerAturn()) {
-            System.out.println("--------command 9");
-            model.mutatePlayerAPits(6);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        // WRONG TURN START HERE
-        if(!model.isPlayerAturn()) {
-            System.out.println("--------command 10");
-            model.mutatePlayerAPits(1);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        if(!model.isPlayerAturn()) {
-            System.out.println("--------command 11");
-            model.mutatePlayerBPits(3);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        // WRONG TURN START HERE
-        if(model.isPlayerAturn()) {
-            System.out.println("--------command 12");
-            model.mutatePlayerBPits(2);
-            model.print();
-            System.out.println(model.isPlayerAturn());
-        }
-
-        model.undo();
-        System.out.println("--------undo 1");
-        model.print();
-
-        model.undo();
-        System.out.println("--------undo 2");
-        model.print();
-
-        model.undo();
-        System.out.println("--------undo 3");
-        model.print();
-
-        model.undo();
-        System.out.println("--------undo 4");
-        model.print();
-        
-        model.undo();
-        System.out.println("--------undo 4");
-        model.print();
-
-        model.undo();
-        System.out.println("--------undo 4");
-        model.print();
-    }
-
-    public static void main(String[] args) {
-        MancalaModel model = new MancalaModel(4);
-        
-        //System.out.println("" + model.isEmptyPlayerAPits() + " " + model.isEmptyPlayerBPits() + " " + model.checkEndGame());
-        model.testCase1(model);
-
     }
 }
 

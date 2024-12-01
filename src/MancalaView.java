@@ -53,7 +53,6 @@ public class MancalaView extends JFrame implements ActionListener {
             bottomLabels[i].setHorizontalAlignment(JLabel.CENTER);
             bottomLabelsPanel.add(bottomLabels[i]);
         }
-        // panelMiddle.add(bottomLabelsPanel);
         bottomLabelsPanel.setBorder(BorderFactory.createEmptyBorder(0, 120, 0, 120));
 
         JPanel topLabelsPanel = new JPanel();
@@ -65,7 +64,6 @@ public class MancalaView extends JFrame implements ActionListener {
             topLabels[i].setHorizontalAlignment(JLabel.CENTER);
             topLabelsPanel.add(topLabels[i]);
         }
-        // panelMiddle.add(topLabelsPanel);
         topLabelsPanel.setBorder(BorderFactory.createEmptyBorder(0, 120, 0, 120));
 
         JPanel panelMiddle = new JPanel();
@@ -118,8 +116,7 @@ public class MancalaView extends JFrame implements ActionListener {
         };
         roundRectanglePanel.setPreferredSize(new Dimension(1400, 650));
         roundRectanglePanel.setLayout(new BorderLayout());
-        // Decorate roundRectanglePanel with padding by using
-        // BorderFactory.createEmptyBorder() --> Decorator Pattern
+        // Decorate roundRectanglePanel with padding by using BorderFactory.createEmptyBorder() --> Decorator Pattern
         roundRectanglePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         roundRectanglePanel.add(panelLeft, BorderLayout.WEST);
         roundRectanglePanel.add(panelRight, BorderLayout.EAST);
@@ -208,12 +205,10 @@ public class MancalaView extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
         if (cmd.equals("updateView")){
-            model.print();
             repaint();
-        } else if(cmd.equals("updateViewPlayAgain")){
+        } else if (cmd.equals("updateViewPlayAgain")){
             setBoardStyle(new RegularColorMancalaBoard());
-        }
-        else if (cmd.equals("undoPits"))
+        } else if (cmd.equals("undoPits"))
             repaint();
         else if (cmd.equals("playerAWins"))
             JOptionPane.showMessageDialog(this, "PLAYER A WINS!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
