@@ -1,5 +1,12 @@
 import java.awt.event.*;
 import java.util.*;
+/**
+ * @author Kevin Chau
+ * @version 1.0
+ * The MancalaModel class represents the state and behavior of a Mancala game.
+ * It manages the pits, mancalas, player turns, and game state, and provides methods
+ * for manipulating the game state and notifying listeners of changes.
+ */
 public class MancalaModel{
     private int[] playerAPits;
     private int[] playerBPits;
@@ -12,6 +19,11 @@ public class MancalaModel{
     private int undoCountPlayerB;
     private ArrayList<ActionListener> listeners;
 
+    /**
+     * Constructs a MancalaModel with the specified number of stones in each pit.
+     *
+     * @param stones the number of stones to place in each pit at the start of the game
+     */
     public MancalaModel(int stones){
         listeners = new ArrayList<ActionListener>();
 
@@ -29,6 +41,13 @@ public class MancalaModel{
         undoCountPlayerB = 0;
     }
 
+    /**
+     * Sets the number of stones in each pit for both players.
+     * Initializes the pits for both Player A and Player B with the specified number of stones.
+     * Notifies all registered listeners to update the view and indicate the start of the game.
+     *
+     * @param stones the number of stones to be placed in each pit
+     */
     public void setNumStones(int stones){
         for(int i = 1; i < 7; i++){
             playerAPits[i] = stones;
@@ -40,6 +59,17 @@ public class MancalaModel{
         }
     }
 
+    /**
+     * Resets the game state to its initial conditions.
+     * 
+     * This method performs the following actions:
+     * - Sets all pits for both players to 0.
+     * - Sets both players' mancalas to 0.
+     * - Sets the turn to player A.
+     * - Clears the undo stack.
+     * - Resets the undo counts for both players.
+     * - Notifies all registered listeners to update the view and prepare for a new game.
+     */
     public void reset(){
         for(int i = 1; i < 7; i++){
             playerAPits[i] = 0;
@@ -59,10 +89,23 @@ public class MancalaModel{
         }
     }
 
+    /**
+     * Saves the current state of the game to the undo stack.
+     * This method creates a new instance of MancalaState with the current
+     * state of the game, including the pits for both players, the mancala
+     * stores, and the current player's turn, and pushes it onto the undo stack.
+     */
     public void saveState() {
         undoStack.push(new MancalaState(playerAPits.clone(), playerBPits.clone(), mancalaA, mancalaB, playerAturn));
     }
 
+    /**
+     * Reverts the game state to the previous state if the undo conditions are met.
+     * 
+     * The method checks if the undo count for either player exceeds 2 or if the undo stack is empty.
+     * If the conditions are met, it pops the previous state from the undo stack and restores the game state.
+     * It then increments the undo counts for both players and notifies all registered listeners about the undo action.
+     */
     public void undo() {
         if(undoCountPlayerA > 2 || undoCountPlayerB > 2)
             return;
@@ -82,36 +125,75 @@ public class MancalaModel{
         }
     }
 
+    /**
+     * Adds an ActionListener to the list of listeners.
+     *
+     * @param listener the ActionListener to be added
+     */
     public void addActionListener(ActionListener listener){
         listeners.add(listener);
     }
 
+    /**
+     * Removes the specified ActionListener from the list of listeners.
+     *
+     * @param listener the ActionListener to be removed
+     */
     public void removeActionListener(ActionListener listener){
         listeners.remove(listener);
     }
 
+    /**
+     * Retrieves the array representing the pits for Player A.
+     *
+     * @return an array of integers where each element represents the number of stones in a pit for Player A.
+     */
     public int[] getPlayerAPits(){
         return playerAPits;
     }
     
+    /**
+     * Retrieves the array of pits for player B.
+     *
+     * @return an array of integers representing the pits for player B.
+     */
     public int[] getPlayerBPits(){
         return playerBPits;
     }
 
+    /**
+     * Returns the number of stones in Mancala A.
+     *
+     * @return the number of stones in Mancala A
+     */
     public int getMancalaA(){
         return mancalaA;
     }
 
+    /**
+     * Returns the number of stones in Mancala B.
+     *
+     * @return the number of stones in Mancala B
+     */
     public int getMancalaB(){
         return mancalaB;
     }
 
-    // This method needs to be called in the controller to check whether if the buttons A[1] --> A[6] are clicked and isPlayerATurn == true.
+    /**
+     * Checks if it is currently player A's turn.
+     * 
+     * @return true if it is player A's turn, false otherwise.
+     */
     public boolean isPlayerAturn(){
         return playerAturn;
     }
 
-    // User A clicks on the empty pit, the controller must do nothing. if(model.isPitEmpty(#) == false) return;
+    /**
+     * Checks if the specified pit is empty for the current player.
+     * 
+     * @param index the index of the pit to check
+     * @return true if the specified pit is empty, false otherwise
+     */
     public boolean isPitEmpty(int index){
         if(playerAturn){
             if(playerAPits[index] == 0)
@@ -124,11 +206,31 @@ public class MancalaModel{
         return false;
     }
 
-    // This is a helper method for mutatePlayerBPits accessed by the MancalaController and MancalaView.
+    /**
+     * This is a helper method for mutatePlayerBPits accessed by the MancalaController and MancalaView.
+     * Returns the index of the pit directly opposite to the given pit index.
+     * 
+     * @param index the index of the pit for which the opposite pit index is to be found
+     * @return the index of the pit directly opposite to the given pit index
+     */
     public int oppositePit(int index){
         return 7 - index;
     }
 
+    /**
+     * Mutates the pits for player A by distributing stones from the specified pit index.
+     * 
+     * This method performs the following steps:
+     * 1. Saves the current state.
+     * 2. Retrieves the number of stones from the specified pit and sets that pit to 0.
+     * 3. Distributes the stones to subsequent pits, including the player's Mancala.
+     * 4. Handles capturing of opponent's stones if the last stone lands in an empty pit on the player's side.
+     * 5. Determines if the player's turn continues based on the final pit.
+     * 6. Resets undo counts for both players.
+     * 7. Notifies listeners to update the view.
+     * 
+     * @param index the index of the pit from which to start distributing stones
+     */
     public void mutatePlayerAPits(int index){
         saveState();
         int stones = playerAPits[index];
@@ -168,6 +270,20 @@ public class MancalaModel{
         }
     }
 
+    /**
+     * Mutates the pits for player B by distributing stones from the specified pit index.
+     * 
+     * This method performs the following steps:
+     * 1. Saves the current state.
+     * 2. Retrieves the number of stones from the specified pit and sets that pit to 0.
+     * 3. Distributes the stones to subsequent pits, including the player's Mancala.
+     * 4. Handles capturing of opponent's stones if the last stone lands in an empty pit on the player's side.
+     * 5. Determines if the player's turn continues based on the final pit.
+     * 6. Resets undo counts for both players.
+     * 7. Notifies listeners to update the view.
+     * 
+     * @param index the index of the pit from which to start distributing stones
+     */
     public void mutatePlayerBPits(int index) {
         saveState();
         int stones = playerBPits[index];
@@ -207,13 +323,26 @@ public class MancalaModel{
         }
     }
 
+    /**
+     * Checks if the game has ended by determining if either player A's or player B's pits are empty.
+     *
+     * @return true if either player A's or player B's pits are empty, indicating the end of the game; false otherwise.
+     */
     public boolean checkEndGame(){
         if(isEmptyPlayerAPits() || isEmptyPlayerBPits())
             return true;
         return false;
     }
 
-    // Call by checkEndGame
+    /**
+     * Checks if all pits for player A are empty.
+     *
+     * This method iterates through the pits for player A
+     * and checks if any of them contain stones. If any pit contains stones, it returns false.
+     * If all pits are empty, it returns true.
+     *
+     * @return true if all pits for player A are empty, false otherwise.
+     */
     public boolean isEmptyPlayerAPits(){
         for(int i = 1; i < 7; i++){
             if(playerAPits[i] != 0)
@@ -222,7 +351,15 @@ public class MancalaModel{
         return true;
     }
 
-    // Call by checkEndGame
+    /**
+     * Checks if all pits for player B are empty.
+     *
+     * This method iterates through the pits for player B
+     * and checks if any of them contain stones. If any pit contains stones, it returns false.
+     * If all pits are empty, it returns true.
+     *
+     * @return true if all pits for player A are empty, false otherwise.
+     */
     public boolean isEmptyPlayerBPits(){
         for(int i = 1; i < 7; i++){
             if(playerBPits[i] != 0)
@@ -231,6 +368,16 @@ public class MancalaModel{
         return true;
     }
 
+    /**
+     * This method is to check for the winner of the Mancala game.
+     * If player A's pits are empty, all stones from player B's pits are moved to player B's Mancala.
+     * If player B's pits are empty, all stones from player A's pits are moved to player A's Mancala.
+     * Notifies all registered listeners to update the view.
+     * Determines the winner based on the number of stones in each player's Mancala and notifies listeners:
+     * - "playerAWins" if player A has more stones
+     * - "playerBWins" if player B has more stones
+     * - "Tie" if both players have the same number of stones
+     */
     public void checkWinner(){
         if(isEmptyPlayerAPits()){
             for(int i = 1; i < 7; i++){

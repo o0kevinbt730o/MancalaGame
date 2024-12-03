@@ -1,7 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-
+/**
+ * @author Kevin Chau, Joyce Liu
+ * @version 1.0
+ * MancalaView is a graphical user interface for the Mancala game.
+ * It extends JFrame and implements ActionListener to handle user interactions.
+ * The view displays the game board, player pits, and Mancala stores, and provides an undo button.
+ * It uses a BoardStyleContext to draw the board and pits with different styles.
+ */
 public class MancalaView extends JFrame implements ActionListener {
     private JPanel[] playerAPanels;
     private JPanel[] playerBPanels;
@@ -9,6 +16,13 @@ public class MancalaView extends JFrame implements ActionListener {
     private MancalaModel model;
     private BoardStyleContext boardStyle;
 
+    /**
+     * MancalaView is a custom JFrame that represents the graphical user interface for the Mancala game.
+     * It initializes and arranges different components such as panels, labels, and buttons to display the game board,
+     * player pits, and Mancala stores. It also handles the painting of the game elements using custom drawing methods.
+     *
+     * @param m The MancalaModel instance that holds the game state and logic.
+     */
     public MancalaView(MancalaModel m) {
         model = m;
         boardStyle = new BoardStyleContext(new RegularColorMancalaBoard());
@@ -177,23 +191,49 @@ public class MancalaView extends JFrame implements ActionListener {
         this.setVisible(true);
     }
 
+    /**
+     * Retrieves the panels associated with player A.
+     *
+     * @return an array of JPanel objects representing player A's panels.
+     */
     public JPanel[] getPlayerAPanels() {
         return playerAPanels;
     }
 
+    /**
+     * Returns an array of JPanel objects representing the panels for player B.
+     *
+     * @return an array of JPanel objects for player B.
+     */
     public JPanel[] getPlayerBPanels() {
         return playerBPanels;
     }
 
+    /**
+     * Retrieves the undo button.
+     *
+     * @return the JButton instance representing the undo button.
+     */
     public JButton getUndoButton() {
         return undoButton;
     }
 
+    /**
+     * Retrieves the shape of the pit from the board style.
+     *
+     * @return the Shape object representing the pit.
+     */
     public Shape getPitShape() {
         return boardStyle.getPit();
     }
 
-    // View-to-View interaction usin controller as intermediary.
+    /**
+     * Sets the board style for the Mancala game view.
+     * This method updates the board style by creating a new BoardStyleContext
+     * with the provided style and then repaints the view to reflect the changes.
+     *
+     * @param style the new BoardStyle to be applied to the board
+     */
     public void setBoardStyle(BoardStyle style) {
         boardStyle = new BoardStyleContext(style);
         repaint();
@@ -201,6 +241,19 @@ public class MancalaView extends JFrame implements ActionListener {
         RepaintManager.currentManager(this).paintDirtyRegions();
     }
 
+    /**
+     * Handles action events triggered by the user interface.
+     * 
+     * @param e the ActionEvent object containing details about the event
+     * 
+     * The method performs different actions based on the command string:
+     * - "updateView": Repaints the view.
+     * - "updateViewPlayAgain": Sets the board style to a regular color Mancala board.
+     * - "undoPits": Repaints the view.
+     * - "playerAWins": Displays a message dialog indicating that Player A wins.
+     * - "playerBWins": Displays a message dialog indicating that Player B wins.
+     * - "Tie": Displays a message dialog indicating that the game is a tie.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
