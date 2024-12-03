@@ -23,9 +23,7 @@ public class MancalaInitScreen extends JFrame implements ActionListener{
 	 * - An input field for the number of stones in each pit.
 	 * - Two buttons for selecting different styles ("Style 1" and "Style 2").
 	 * - A button to start the game ("Start Game").
-	 *
-	 * The window is set to a fixed size of 500x500 pixels, centered on the screen,
-	 * and is not resizable. The layout is set to null for absolute positioning of components.
+	 * 
 	 */
 	public MancalaInitScreen(MancalaModel model) {
 		this.setTitle("Game Mode");
