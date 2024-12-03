@@ -57,17 +57,18 @@ public class MancalaController{
             }
         });
 
-        // Below are View-to-View direct interaction without needing model to update and using controller as intermediary
+        // Below are View-to-View direct interaction without needing a model to update and using 
+        // controller as intermediary since having a model to notify is redundant and complicates the code.
         initScreen.getStyle1().addActionListener((event) -> {
-                view.setBoardStyle(new EllipseBrightColorBoard());
-                // reinitialize listeners to update the position of the shapes in the view
-                initViewListeners();
+            view.setBoardStyle(new EllipseBrightColorBoard());
+            // reinitialize listeners to update the position of the shapes in the view
+            initViewListeners();
         });
 
         initScreen.getStyle2().addActionListener((event) -> {
-                view.setBoardStyle(new RectangleDarkColorBoard());
-                // reinitialize listeners to update the position of the shapes in the view
-                initViewListeners();
+            view.setBoardStyle(new RectangleDarkColorBoard());
+            // reinitialize listeners to update the position of the shapes in the view
+            initViewListeners();
         });
     }
 
