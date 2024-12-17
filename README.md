@@ -2,7 +2,11 @@
 ## Purpose of Project
 Design a Mancala Game using GUI and pattern practices in Java.
 ## Game Description
-This game is for two human players. (No computer player is considered in this project. Two players will take a turn to play this game using one mouse.) Initially, the program displays an empty board, then asks the player to enter the number of stones that will be placed in each pit. For example, when the user enters 3, 3 stones will be places in each pit of the board. The two Mancala will be still empty. (Two players will agree on this number and one of the player will enter the number.) Let's make the maximum number of stones per pit is 4. That is, at the beginning the player can enter 3 or 4 for the number of stones/per pit.
+This game is for two human players. No computer player is considered in this project. Two players will take a turn to play this game using one mouse. 
+
+Initially, the program displays an empty board, then asks the player to enter the number of stones that will be placed in each pit. For example, when the user enters 3, 3 stones will be places in each pit of the board. The two Mancala will be still empty. 
+
+Two players will agree on this number and one of the player will enter the number. At the beginning the player can enter 3 or 4 for the number of stones/per pit.
 
 A player selects a pit by clicking the mouse on the pit Then, the program updates the board according to the game rule explained above.
 
